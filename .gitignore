@@ -1,0 +1,4 @@
+node_modules/*
+useless/*
+.vscode/*
+secrets/id_rsa

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Devira Chain - Verifikasi Dokumen</title>
+  <link rel="stylesheet" href="./css/loader.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+  <link rel="stylesheet" href="./css/main.css" />
+</head>
+
+<body class="font-sans bg-gray-50">
+  <!-- Loader -->
+  <div class="loader-wraper">
+    <div class="lds-roller">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- Navigasi -->
+  <nav class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <a href="index.html" class="text-primary-700 font-bold text-xl">
+            Devira Chain
+          </a>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="index.html"
+            class="text-primary-700 border-b-2 border-primary-700 px-1 py-2 text-sm font-medium">Beranda</a>
+          <a href="upload.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Upload</a>
+          <a href="verify.html"
+            class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Verifikasi</a>
+          <a href="delete.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Hapus</a>
+          <a href="admin.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Admin</a>
+          <a href="about.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Tim Kami</a>
+        </div>
+        <div class="hidden md:flex items-center space-x-4">
+          <button id="loginButton" onclick="connect()"
+            class="bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-700">
+            Masuk
+          </button>
+          <button id="logoutButton" onclick="disconnect()"
+            class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+            Keluar
+          </button>
+        </div>
+        <div class="md:hidden flex items-center">
+          <button type="button"
+            class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-primary-700 focus:outline-none">
+            <span class="sr-only">Buka menu</span>
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu mobile -->
+    <div class="md:hidden hidden" id="mobile-menu">
+      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <a href="index.html"
+          class="bg-primary-100 text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Beranda</a>
+        <a href="upload.html"
+          class="text-gray-600 hover:bg-primary-50 hover:text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Upload</a>
+        <a href="verify.html"
+          class="text-gray-600 hover:bg-primary-50 hover:text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Verifikasi</a>
+        <a href="delete.html"
+          class="text-gray-600 hover:bg-primary-50 hover:text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Hapus</a>
+        <a href="admin.html"
+          class="text-gray-600 hover:bg-primary-50 hover:text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Admin</a>
+        <a href="about.html"
+          class="text-gray-600 hover:bg-primary-50 hover:text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Tim Kami</a>
+        <div class="pt-4 pb-3 border-t border-gray-200">
+          <div class="flex items-center px-5 space-x-3">
+            <button id="loginButtonMobile" onclick="connect()"
+              class="bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-700">
+              Masuk
+            </button>
+            <button id="logoutButtonMobile" onclick="disconnect()"
+              class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+              Keluar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Bagian Hero -->
+  <section class="bg-gradient-to-r from-primary-700 to-primary-900 text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
+        <div class="mb-12 lg:mb-0">
+          <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6">
+            Bangun <span class="text-primary-200">Kepercayaan</span> dalam Organisasi Anda
+          </h1>
+          <p class="text-xl mb-8 text-primary-100">
+            Devira Chain adalah platform verifikasi dokumen terkemuka yang dirancang untuk membawa efisiensi dan
+            keamanan dalam operasional anda.
+          </p>
+          <a href="verify.html"
+            class="bg-white text-primary-700 px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition duration-300 inline-block">
+            Verifikasi Sekarang
+          </a>
+        </div>
+        <div class="relative">
+          <img src="./files/securefiles.svg" alt="Ilustrasi blockchain" class="w-full h-auto">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bagian Fitur -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-gray-50 p-8 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+          <div class="text-primary-600 mb-4">
+            <img src="files/undraw_investment_data_re_sh9x.svg" width="100" class="mx-auto">
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-center">Biaya Rendah</h3>
+          <p class="text-gray-600 text-center">
+            Dengan Devira Chain, mengunggah dokumen hanya membutuhkan biaya <span
+              class="text-primary-600 font-medium">$0.01</span>
+            sehingga Anda dapat mengunggah tanpa khawatir tentang biaya operasional.
+          </p>
+        </div>
+        <div class="bg-gray-50 p-8 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+          <div class="text-primary-600 mb-4">
+            <img src="files/undraw_time_management_re_tk5w.svg" width="100" class="mx-auto">
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-center">Proses Cepat</h3>
+          <p class="text-gray-600 text-center">
+            Verifikasi dokumen hanya membutuhkan waktu <span class="text-primary-600 font-medium">1 Detik</span>
+            dengan sistem berbasis blockchain kami.
+          </p>
+        </div>
+        <div class="bg-gray-50 p-8 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+          <div class="text-primary-600 mb-4">
+            <img src="files/securefiles.svg" width="100" class="mx-auto">
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-center">Aman</h3>
+          <p class="text-gray-600 text-center">
+            100% Aman & Transparan dengan Teknologi Blockchain.
+            Dokumen anda dilindungi oleh kriptografi tingkat tinggi.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bagian Tentang Kami -->
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+        <div class="mb-12 lg:mb-0">
+          <span class="text-primary-600 font-medium">TENTANG KAMI</span>
+          <h2 class="text-3xl font-bold mb-6">Kami adalah Platform Verifikasi Dokumen Terbaik</h2>
+          <p class="text-gray-600 mb-4">
+            Devira Chain menyediakan solusi terdesentralisasi untuk verifikasi dokumen menggunakan teknologi blockchain.
+            Platform kami memastikan keaslian dan integritas dokumen penting Anda.
+          </p>
+          <p class="text-gray-600 mb-6">
+            Dengan sistem kami, institusi dapat dengan mudah memverifikasi dokumen tanpa khawatir tentang pemalsuan atau
+            perubahan.
+            Setiap dokumen diamankan secara kriptografis di blockchain.
+          </p>
+          <a href="about.html"
+            class="bg-primary-600 text-white px-6 py-2 rounded-md font-medium hover:bg-primary-700 transition duration-300 inline-block">
+            Pelajari Lebih Lanjut
+          </a>
+        </div>
+        <div class="rounded-lg overflow-hidden shadow-lg">
+          <img src="./assets/images/about.jpg" alt="Tentang Devira Chain" class="w-full h-auto">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bagian Statistik -->
+  <section class="py-16 bg-primary-700 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+        <div class="rounded-lg overflow-hidden shadow-lg mb-12 lg:mb-0">
+          <img src="./assets/images/work.jpg" alt="Pekerjaan Devira Chain" class="w-full h-auto">
+        </div>
+        <div>
+          <span class="text-primary-200 font-medium">PEKERJAAN KAMI</span>
+          <h2 class="text-3xl font-bold mb-6">Jelajahi Kemungkinan Tanpa Batas</h2>
+          <p class="text-primary-100 mb-8">
+            Devira Chain merevolusi verifikasi dokumen dengan teknologi blockchain.
+            Pendekatan terdesentralisasi kami memastikan kepercayaan dan transparansi dalam setiap transaksi.
+          </p>
+
+          <div class="grid grid-cols-2 gap-6">
+            <div class="bg-primary-800 p-6 rounded-lg">
+              <div class="text-primary-200 mb-3">
+                <i class="fas fa-university fa-2x"></i>
+              </div>
+              <h3 class="text-2xl font-bold mb-1">
+                <span class="purecounter" data-purecounter-start="0" data-purecounter-end="1"
+                  data-purecounter-duration="1">1</span>
+              </h3>
+              <p class="text-primary-200">UNIVERSITAS TERLAYANI</p>
+            </div>
+            <div class="bg-primary-800 p-6 rounded-lg">
+              <div class="text-primary-200 mb-3">
+                <i class="fas fa-award fa-2x"></i>
+              </div>
+              <h3 class="text-2xl font-bold mb-1">
+                <span class="purecounter" data-purecounter-start="0" data-purecounter-end="2917"
+                  data-purecounter-duration="1">2.917</span>
+              </h3>
+              <p class="text-primary-200">DOKUMEN TERVERIFIKASI</p>
+            </div>
+            <div class="bg-primary-800 p-6 rounded-lg">
+              <div class="text-primary-200 mb-3">
+                <i class="fas fa-users fa-2x"></i>
+              </div>
+              <h3 class="text-2xl font-bold mb-1">
+                <span class="purecounter" data-purecounter-start="0" data-purecounter-end="13"
+                  data-purecounter-duration="1">13</span>
+              </h3>
+              <p class="text-primary-200">EKSPORTER AKTIF</p>
+            </div>
+            <div class="bg-primary-800 p-6 rounded-lg">
+              <div class="text-primary-200 mb-3">
+                <i class="fas fa-clock fa-2x"></i>
+              </div>
+              <h3 class="text-2xl font-bold mb-1">
+                <span class="purecounter" data-purecounter-start="0" data-purecounter-end="1157"
+                  data-purecounter-duration="1">1.157</span>
+              </h3>
+              <p class="text-primary-200">ULASAN BAIK</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bagian Contoh -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <span class="text-primary-600 font-medium">SAMPLE</span>
+        <h2 class="text-3xl font-bold mb-4">Pindai Kartu Contoh untuk Menguji Sistem Kami</h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+          <img src="files/Ali Falah Orio.svg" alt="Contoh Dokumen 1" class="w-full h-auto rounded">
+        </div>
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+          <img src="files/Ali Hussein Orio.svg" alt="Contoh Dokumen 2" class="w-full h-auto rounded">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-4 gap-8 mb-12">
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Layanan</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Ethereum</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Blockchain Tech</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Smart Contracts</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Tentang Kami</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Perusahaan</a></li>
+            <li><a href="about.html" class="text-gray-400 hover:text-white transition duration-300">Tim Kami</a></li>
+          </ul>
+        </div>
+        <div class="md:col-span-2">
+          <h3 class="text-lg font-semibold mb-4">Devira Chain</h3>
+          <p class="text-gray-400 mb-6">
+            Devira Chain adalah platform verifikasi dokumen terkemuka yang dirancang untuk membawa efisiensi dan
+            keamanan dalam operasional Anda.
+          </p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i
+                class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i
+                class="fab fa-twitter"></i></a>
+            <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-github"></i></a>
+            <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i
+                class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-gray-800">
+        <p class="text-gray-400 text-center">Devira Chain © 2025. Seluruh hak cipta dilindungi.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Tombol scroll ke atas -->
+  <button onclick="topFunction()" id="scroll-btn"
+    class="fixed bottom-6 right-6 bg-primary-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-primary-700 transition duration-300 hidden">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- Tombol kontak -->
+  <a href="mailto:devirachain@gmail.com?subject=Dari Situs Devira Chain"
+    class="fixed bottom-6 left-6 bg-gray-800 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-700 transition duration-300">
+    <i class="fas fa-headset"></i>
+  </a>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="./js/purecounter.min.js"></script>
+  <script src="./js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+  <script src="./js/qrcode.min.js"></script>
+  <script src="./js/app.js"></script>
+  <script>
+    if (typeof window.ethereum === 'undefined') {
+      document.querySelector('.alert').classList.remove('d-none');
+      document.getElementById('loginButton').style.display = 'none';
+      document.getElementById('loginButtonMobile').style.display = 'none';
+    }
+  </script>
+
+  <script>
+    $('[aria-controls="mobile-menu"]').click(function () {
+      $('#mobile-menu').toggleClass('hidden');
+    });
+
+    window.onscroll = function () {
+      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        $('#scroll-btn').removeClass('hidden');
+      } else {
+        $('#scroll-btn').addClass('hidden');
+      }
+    };
+
+    $(window).on('load', function () {
+      $(".loader-wraper").fadeOut("slow");
+    });
+  </script>
+</body>
+
+</html>

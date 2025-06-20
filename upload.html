@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Dokumen - Devira Chain</title>
+  <link rel="stylesheet" href="./css/loader.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd', 400: '#a78bfa',
+              500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 800: '#5b21b6', 900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="node_modules/web3/dist/web3.min.js"></script>
+  <script src="js/App.js"></script>
+  <script src="js/qrcode.min.js"></script>
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+  <style>
+    .d-none {
+      display: none !important;
+    }
+
+    .mobile-menu-item {
+      padding: 12px 16px;
+    }
+
+    .transaction-buttons {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .transaction-buttons {
+        flex-direction: row;
+      }
+    }
+
+    .transaction-image {
+      object-fit: cover;
+    }
+
+    .transaction-card {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .transaction-card:hover .transaction-image {
+      transform: scale(1.05);
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body class="font-sans bg-gray-50">
+  <div class="loader-wraper">
+    <div class="lds-roller">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+
+  <nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center"><a href="index.html" class="text-primary-700 font-bold text-xl">Devira Chain</a>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="index.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Beranda</a>
+          <a href="upload.html"
+            class="text-primary-700 border-b-2 border-primary-700 px-1 py-2 text-sm font-medium">Upload</a>
+          <a href="verify.html"
+            class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Verifikasi</a>
+          <a href="delete.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Hapus</a>
+          <a href="admin.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Admin</a>
+          <a href="about.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Tim Kami</a>
+        </div>
+        <div class="hidden md:flex items-center space-x-4">
+          <button id="loginButton" onclick="connect()"
+            class="bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-700">Masuk</button>
+          <button id="logoutButton" onclick="disconnect()"
+            class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Keluar</button>
+        </div>
+        <div class="md:hidden flex items-center">
+          <button type="button" id="mobileMenuButton"
+            class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-primary-700 focus:outline-none">
+            <span class="sr-only">Buka menu</span><i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="md:hidden hidden bg-white shadow-lg" id="mobile-menu">
+      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <a href="index.html"
+          class="mobile-menu-item text-gray-600 hover:bg-primary-50 hover:text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Beranda</a>
+        <a href="upload.html"
+          class="mobile-menu-item bg-primary-100 text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Upload</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+
+      <div class="m-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md d-none" role="alert"
+        id="metamaskAlert">
+        <p>Silakan unduh MetaMask di <a target="_blank" href="https://metamask.io/download"
+            class="font-semibold underline">Situs Metamask</a></p>
+      </div>
+
+      <!-- Info Dompet -->
+      <div class="bg-primary-50 p-6 rounded-lg mb-8">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-wallet text-primary-600 mr-3 text-xl"></i>
+          <h2 class="text-xl font-semibold text-gray-800">Informasi Wallet</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <p class="text-sm text-gray-600">Info Eksportir</p>
+            <p id="Exporter-info" class="font-medium text-gray-800">Tidak terhubung</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600">Alamat</p>
+            <p id="userAddress" class="font-medium text-gray-800 truncate">n/a</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600">Jaringan</p>
+            <p id="network" class="font-medium text-gray-800">n/a</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600">Saldo</p>
+            <p id="userBalance" class="font-medium text-gray-800">n/a</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Upload Dokumen</h2>
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-medium mb-2" for="doc-file">Pilih Dokumen</label>
+          <div class="mt-1">
+            <input onchange="get_Sha3()" id="doc-file" type="file"
+              class="w-full px-4 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              accept="application/pdf, image/*">
+          </div>
+          <span id="note" class="text-red-500 text-sm mt-1">Belum ada file dipilih</span>
+        </div>
+        <div class="flex justify-center"><img id="loader" class="d-none h-8 w-8" src="files/loader.svg" alt="loader">
+        </div>
+        <button onclick="sendHash()" id="upload_file_button"
+          class="w-full bg-primary-600 text-white py-3 px-4 rounded-md font-medium hover:bg-primary-700 transition duration-300">
+          Upload Dokumen
+        </button>
+      </div>
+
+      <div class="transaction-status d-none p-6 border-t border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-800 mb-6">Informasi Transaksi</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-4">
+            <div>
+              <p class="text-sm text-gray-600">Transaction Hash</p>
+              <p id="transaction-hash" class="font-medium text-gray-800 break-all"></p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">File Hash</p>
+              <p id="file-hash" class="font-medium text-gray-800 break-all"></p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Contract Address</p>
+              <p id="contract-address" class="font-medium text-gray-800 break-all"></p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Time Stamps</p>
+              <p id="time-stamps" class="font-medium text-gray-800"></p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Block Number</p>
+              <p id="blockNumber" class="font-medium text-gray-800"></p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Block Hash</p>
+              <p id="blockHash" class="font-medium text-gray-800 break-all"></p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Gas Used</p>
+              <p id="gas-used" class="font-medium text-gray-800"></p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Network</p>
+              <p id="to-netowrk" class="font-medium text-gray-800"></p>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-center justify-center space-y-6 pt-6 md:pt-0">
+            <div id="qrcode"></div>
+            <!-- <div id="qrcode" class="p-2 border border-gray-200 rounded-md"></div> -->
+            <div class="flex flex-wrap justify-center gap-4 w-full">
+              <a id="download-link" href="#" data-name="QR-Code" download="QR-Code-Devira-Chain.png"
+                class="bg-primary-600 text-white px-5 py-2 rounded-md font-medium hover:bg-primary-700 transition duration-300 inline-flex items-center text-sm">
+                <i class="fas fa-download mr-2"></i> Unduh QR-CODE
+              </a>
+              <a id="verfiy" href="#" target="_blank"
+                class="bg-gray-700 text-white px-5 py-2 rounded-md font-medium hover:bg-gray-800 transition duration-300 inline-flex items-center text-sm">
+                <i class="fas fa-check-circle mr-2"></i> Verifikasi Dokumen
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 bg-white rounded-lg shadow-md overflow-hidden">
+      <h5 id="recent-header" class="p-6 border-b border-gray-200 text-xl font-semibold text-gray-800">
+        Dokumen Terakhir Diunggah
+      </h5>
+      <div class="loading-tx d-none p-12 flex justify-center">
+        <img src="./files/tx-loading.svg" alt="Memuat transaksi" class="h-16 w-16">
+      </div>
+      <div class="transactions grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6"></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-4 gap-8 mb-12">
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Layanan</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Ethereum</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Blockchain Tech</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Smart Contracts</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Tentang Kami</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Perusahaan</a></li>
+            <li><a href="about.html" class="text-gray-400 hover:text-white transition duration-300">Tim Kami</a></li>
+          </ul>
+        </div>
+        <div class="md:col-span-2">
+          <h3 class="text-lg font-semibold mb-4">Devira Chain</h3>
+          <p class="text-gray-400 mb-6">
+            Devira Chain adalah platform verifikasi dokumen terkemuka yang dirancang untuk membawa efisiensi dan
+            keamanan dalam operasional Anda.
+          </p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i
+                class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i
+                class="fab fa-twitter"></i></a>
+            <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-github"></i></a>
+            <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i
+                class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-gray-800">
+        <p class="text-gray-400 text-center">Devira Chain © 2025. Seluruh hak cipta dilindungi.</p>
+      </div>
+    </div>
+  </footer>
+
+  <button onclick="topFunction()" id="scroll-btn"
+    class="fixed bottom-6 right-6 bg-primary-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-primary-700 transition duration-300 hidden"><i
+      class="fas fa-arrow-up"></i></button>
+  <a href="mailto:devirachain@gmail.com?subject=Dari Situs Devira Chain"
+    class="fixed bottom-6 left-6 bg-gray-800 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-700 transition duration-300"><i
+      class="fas fa-headset"></i></a>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./js/script.js"></script>
+  <script>
+    document.getElementById('mobileMenuButton').addEventListener('click', function () {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+  </script>
+</body>
+
+</html>

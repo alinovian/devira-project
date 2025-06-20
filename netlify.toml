@@ -1,0 +1,3 @@
+// Isi file netlify.toml:
+[build]
+  functions = "netlify/functions"

@@ -1,0 +1,21 @@
+{
+  "name": "devira-chain-project",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@metamask/sdk": "^0.1.0",
+    "@pinata/sdk": "^2.1.0",
+    "axios": "^1.10.0",
+    "qrcode": "^1.5.4",
+    "web3": "^1.7.0",
+    "formidable": "^3.5.1"
+  },
+  "keywords": [],
+  "description": ""
+}   
