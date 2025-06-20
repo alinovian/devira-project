@@ -487,7 +487,7 @@ function printUploadInfo(result) {
         `<i class="fa-solid fa-gas-pump mx-1"></i> ${result.gasUsed} Gwei`
     );
     $("#loader").addClass("d-none");
-    $("#upload_file_button").addClass("d-block");
+    $("#upload_file_button").slideDown();
     show_txInfo();
     get_ethBalance();
 
