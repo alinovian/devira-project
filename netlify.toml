@@ -1,3 +1,10 @@
-// Isi file netlify.toml:
+# Konfigurasi dasar untuk build
 [build]
+  # Perintah build, bisa dikosongkan jika tidak ada proses build khusus
+  command = "echo 'Tidak ada proses build'"
+  
+  # Direktori tempat file-file yang akan di-deploy berada (root)
+  publish = "."
+  
+  # Direktori tempat serverless functions Anda berada
   functions = "netlify/functions"
