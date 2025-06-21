@@ -247,7 +247,12 @@ window.onload = async () => {
     hide_txInfo();
 
     if (window.location.href.indexOf("verify.html") > -1) {
-        $("#upload_file_button").attr("disabled", true);
+        // Hapus atau komentari baris ini:
+        // $("#upload_file_button").attr("disabled", true);
+
+        // Aktifkan tombol verifikasi secara default jika Web3 publik berhasil diinisialisasi
+        // Ini memastikan tombol aktif bahkan jika tidak ada hash di URL
+        $("#upload_file_button").attr("disabled", false);
         checkURL();
     } else {
         $("#upload_file_button").attr("disabled", true);
@@ -289,6 +294,8 @@ window.onload = async () => {
         if (window.location.href.indexOf("verify.html") === -1) {
             $("#doc-file").attr("disabled", true);
         }
+        // Pastikan input file di halaman verifikasi TIDAK dinonaktifkan jika tidak login
+        // Logika di atas sudah menangani ini (tidak masuk blok if)
     }
 };
 
@@ -300,7 +307,7 @@ async function verify_Hash() {
         await contract.methods
             .findDocHash(window.hashedfile)
             .call({
-                // from: window.userAddress
+                // from: window.userAddress // Ini sudah dikomentari, bagus.
             })
             .then((result) => {
                 $(".transaction-status").removeClass("d-none");
@@ -310,7 +317,21 @@ async function verify_Hash() {
                 } else {
                     print_verification_info(result, false);
                 }
+            })
+            .catch(error => { // Tangani error jika panggilan kontrak gagal
+                console.error("Error verifying hash:", error);
+                $("#loader").hide();
+                $("#doc-status").html(`<h3 class="text-danger">
+                    Error saat verifikasi: ${error.message}
+                </h3>`);
+                show_txInfo();
             });
+    } else {
+        $("#loader").hide();
+        $("#doc-status").html(`<h3 class="text-warning">
+            Pilih file terlebih dahulu untuk verifikasi.
+        </h3>`);
+        show_txInfo();
     }
 }
 
@@ -344,6 +365,9 @@ async function get_Sha3() {
         };
     } else {
         window.hashedfile = null;
+        // Opsional: Nonaktifkan tombol verifikasi jika tidak ada file yang dipilih
+        // $("#upload_file_button").attr("disabled", true);
+        $("#note").html(`<span class="text-red-500 text-sm mt-1">Belum ada file dipilih</span>`);
         return false;
     }
 }
@@ -960,14 +984,15 @@ async function deleteExporter() {
                 })
 
                 .on("receipt", function (receipt) {
+                    $("#note").html(
+                        `<h5 class="text-info p-1 text-center">Dokumen Dihapus</h5>`
+                    );
+
                     $("#loader").addClass("d-none");
                     $("#ExporterBtn").slideDown();
                     $("#edit").slideDown();
                     $("#delete").slideDown();
                     console.log(receipt);
-                    $("#note").html(
-                        `<h5 class="text-info">Eksportir Berhasil Dihapus</h5>`
-                    );
                 })
                 .on("error", function (error) {
                     console.log(error.message);
