@@ -2,9 +2,9 @@
   "name": "devira",
   "version": "1.0.0",
   "scripts": {
-    "install-deps": "npm install --production",
-    "build": "npm run install-deps && mkdir -p public && cp -r *.html css/ js/ files/ contract/ assets/ node_modules/ public/",
-    "postinstall": "npm run install-deps"
+    "prebuild": "npm install --omit=dev",
+    "build": "rmdir /s /q public & mkdir public & copyfiles *.html css/* js/* files/* contract/* assets/* public/",
+    "start": "echo 'Aplikasi siap digunakan'"
   },
   "dependencies": {
     "@metamask/sdk": "^0.1.0",
@@ -12,5 +12,9 @@
     "axios": "^1.10.0",
     "qrcode": "^1.5.4",
     "web3": "^1.7.0"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "mkdirp": "^1.0.4"
   }
 }
