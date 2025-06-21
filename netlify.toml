@@ -4,4 +4,4 @@
   
 [build.environment]
   NODE_VERSION = "22"
-  NPM_FLAGS = "--omit=dev"
+  NPM_FLAGS = "--legacy-peer-deps"
