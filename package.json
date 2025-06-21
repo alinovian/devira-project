@@ -1,11 +1,9 @@
 {
   "name": "devira",
   "version": "1.0.0",
-  "private": true,
   "scripts": {
-    "build": "mkdir -p public && cp *.html public/ && cp -r css/ js/ files/ contract/ assets/ public/",
-    "predeploy": "npm install",
-    "start": "echo 'Server tidak diperlukan untuk static site'"
+    "build": "npm install && mkdir -p public && cp -r *.html css/ js/ files/ contract/ assets/ public/",
+    "predeploy": "npm install"
   },
   "dependencies": {
     "@metamask/sdk": "^0.1.0",

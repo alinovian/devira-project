@@ -5,3 +5,6 @@
 
 [build.environment]
   NODE_ENV = "production"
+
+[build]
+  command = "rm -rf node_modules && npm install --force && npm run build"
