@@ -2,19 +2,16 @@
   "name": "devira",
   "version": "1.0.0",
   "private": true,
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "mkdir -p public && cp *.html public/ && cp -r css/ js/ files/ contract/ assets/ public/",
+    "predeploy": "npm install",
+    "start": "echo 'Server tidak diperlukan untuk static site'"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@metamask/sdk": "^0.1.0",
     "@pinata/sdk": "^2.1.0",
     "axios": "^1.10.0",
     "qrcode": "^1.5.4",
     "web3": "^1.7.0"
-  },
-  "keywords": [],
-  "description": ""
-}   
+  }
+}
