@@ -1,0 +1,7 @@
+[build]
+  command = "npm install && npm run build"
+  publish = "public"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_ENV = "production"
