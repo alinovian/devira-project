@@ -4,7 +4,8 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "vercel-build": "echo 'Static build completed. Vercel will now serve files based on vercel.json.'"
   },
   "author": "",
   "license": "ISC",
@@ -17,4 +18,4 @@
   },
   "keywords": [],
   "description": ""
-}   
+}
