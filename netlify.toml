@@ -4,4 +4,4 @@
   functions = "netlify/functions"
 
 [build.environment]
-  NODE_ENV = "production"
+  NPM_FLAGS = "--production" # Hanya install dependencies yang diperlukan

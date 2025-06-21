@@ -2,8 +2,9 @@
   "name": "devira",
   "version": "1.0.0",
   "scripts": {
-    "build": "npm install && mkdir -p public && cp -r *.html css/ js/ files/ contract/ assets/ public/",
-    "predeploy": "npm install"
+    "install-deps": "npm install --production",
+    "build": "npm run install-deps && mkdir -p public && cp -r *.html css/ js/ files/ contract/ assets/ node_modules/ public/",
+    "postinstall": "npm run install-deps"
   },
   "dependencies": {
     "@metamask/sdk": "^0.1.0",
