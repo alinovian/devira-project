@@ -299,8 +299,8 @@ window.onload = async () => {
         await get_ethBalance();
         $("#Exporter-info").html(`<i class="fa-solid fa-building-columns mx-2 text-warning"></i>${window.info}`);
 
-        if (window.location.pathname.includes("/admin.html")) await getCounters();
-        if (window.location.pathname.includes("/upload.html")) listen();
+        if (window.location.pathname.includes("/admin")) await getCounters();
+        if (window.location.pathname.includes("/upload")) listen();
 
     } else {
         $("#logoutButton, #logoutButtonMobile").hide();
@@ -1137,7 +1137,7 @@ function generateQRCode() {
 
 async function listen() {
     console.log("started...");
-    if (window.location.pathname != "/upload.html") return;
+    if (!window.location.pathname.includes("/upload")) return;
     document.querySelector(".loading-tx").classList.remove("d-none");
 
     // Pastikan window.ethereum tersedia sebelum menggunakan web3 dari window.ethereum
