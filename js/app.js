@@ -1160,14 +1160,24 @@ async function listen() {
         return;
     }
 
+    // try {
+    //     const blockNumber = await window.web3.eth.getBlockNumber();
+    //     await window.contract.getPastEvents(
+    //         "addHash", {
+    //         filter: {
+    //             _exporter: window.userAddress,
+    //         },
+    //         fromBlock: Math.max(0, blockNumber - 999),
+    //         toBlock: "latest",
+    //     },
+
     try {
-        const blockNumber = await window.web3.eth.getBlockNumber();
         await window.contract.getPastEvents(
             "addHash", {
             filter: {
                 _exporter: window.userAddress,
             },
-            fromBlock: Math.max(0, blockNumber - 999), // Mencegah fromBlock negatif
+            fromBlock: 0,
             toBlock: "latest",
         },
             function (error, events) {
