@@ -3,13 +3,14 @@ const PINATA_API_KEY = "f5698a59951c7849f8f2";
 const PINATA_SECRET_API_KEY = "b2fbbca49f04ebd142a0da7d95ab1db0b9ee11af5f0e628170b346845a4163ae";
 
 // Gateway IPFS publik Piñata
-const IPFS_GATEWAY = "https://bronze-tropical-quokka-65.mypinata.cloud/ipfs/"; //
+const IPFS_GATEWAY = "https://bronze-tropical-quokka-65.mypinata.cloud/ipfs/";
 
 window.CONTRACT = {
     address: "0x1f4EBE456b4c42080BD2e8a3Cdab1a4F0997AB33",
     network: "https://sepolia.infura.io/v3/89aee58194b540138a3c2cba9f423fe3",
-    networkpublic: "https://ethereum-sepolia.publicnode.com", //"https://rpc.sepolia.org",
+    networkpublic: "https://ethereum-sepolia.publicnode.com",
     explore: "https://sepolia.etherscan.io",
+
     // address: "0xEdB7C66d41749420760CA9bdD2C954631C73007f",
     // network: "https://rpc-amoy.polygon.technology",
     // explore: "https://amoy.polygonscan.com",
@@ -202,7 +203,7 @@ window.CONTRACT = {
     }
     ],
 };
-//login
+
 async function connect() {
     if (window.ethereum) {
         try {
@@ -218,17 +219,32 @@ async function connect() {
                 });
 
             window.userAddress = selectedAccount;
-            console.log(selectedAccount);
+            console.log("Akun yang terhubung:", selectedAccount); // Log untuk debugging
             window.localStorage.setItem("userAddress", window.userAddress);
             window.location.reload();
-        } catch (error) { }
+        } catch (error) {
+            console.error("Gagal terhubung ke MetaMask:", error);
+        }
     } else {
+        // Ini hanya dipicu saat tombol 'Masuk' diklik dan MetaMask tidak ditemukan
         $("#upload_file_button").attr("disabled", true);
-        $("#doc-file").attr("disabled", true);
+        $("#doc-file").attr("disabled", true); // Menonaktifkan input file
         // Show The Warning for not detecting wallet
         document.querySelector(".alert").classList.remove("d-none");
     }
 }
+
+// Tambahkan event listener untuk DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.location.pathname.includes("/verify")) {
+        $("#doc-file").attr("disabled", false);
+        $("#upload_file_button").attr("disabled", false);
+        console.log("DOMContentLoaded: Input 'doc-file' dan tombol 'Verifikasi Dokumen' diaktifkan.");
+        console.log("DOMContentLoaded: Status #doc-file disabled:", $("#doc-file").is(":disabled"));
+        console.log("DOMContentLoaded: Status #upload_file_button disabled:", $("#upload_file_button").is(":disabled"));
+    }
+});
+
 
 window.onload = async () => {
     try {
@@ -240,19 +256,22 @@ window.onload = async () => {
         console.log(`Provider publik berhasil diinisialisasi menggunakan network: ${window.CONTRACT.networkpublic}`);
     } catch (error) {
         console.error("Gagal menginisialisasi Web3 atau Contract:", error);
+        $("#upload_file_button").attr("disabled", true);
+        $("#doc-file").attr("disabled", true);
+        console.log("Web3 atau Contract gagal diinisialisasi. Tombol dan input file dinonaktifkan.");
         return;
     }
 
     $(".loader-wraper").fadeOut("slow");
     hide_txInfo();
 
-    if (window.location.href.indexOf("verify.html") > -1) {
-        // Hapus atau komentari baris ini:
-        // $("#upload_file_button").attr("disabled", true);
-
-        // Aktifkan tombol verifikasi secara default jika Web3 publik berhasil diinisialisasi
-        // Ini memastikan tombol aktif bahkan jika tidak ada hash di URL
+    if (window.location.pathname.includes("/verify")) {
+        $("#doc-file").attr("disabled", false);
         $("#upload_file_button").attr("disabled", false);
+        console.log("Window.onload: Input 'doc-file' dan tombol 'Verifikasi Dokumen' diaktifkan (redudansi).");
+        console.log("Window.onload: Status #doc-file disabled:", $("#doc-file").is(":disabled"));
+        console.log("Window.onload: Status #upload_file_button disabled:", $("#upload_file_button").is(":disabled"));
+
         checkURL();
     } else {
         $("#upload_file_button").attr("disabled", true);
@@ -272,9 +291,9 @@ window.onload = async () => {
             window.web3 = new Web3(window.ethereum);
             window.contract = new window.web3.eth.Contract(window.CONTRACT.abi, window.CONTRACT.address);
             console.log(`Provider berhasil diganti dan sekarang menggunakan network: ${window.CONTRACT.network}`);
+            console.log("Status: Login terdeteksi. Menggunakan network privat (RPC dari MetaMask) untuk semua transaksi.");
         }
 
-        // Muat data khusus pengguna yang login
         await getExporterInfo();
         await get_ChainID();
         await get_ethBalance();
@@ -284,48 +303,50 @@ window.onload = async () => {
         if (window.location.pathname.includes("/upload.html")) listen();
 
     } else {
-        // --- KONDISI: PENGGUNA BELUM LOGIN ---
         $("#logoutButton, #logoutButtonMobile").hide();
         $("#loginButton, #loginButtonMobile").show();
         $(".box").addClass("d-none");
         $(".loading-tx").addClass("d-none");
 
-        // Nonaktifkan input file di halaman selain verifikasi
-        if (window.location.href.indexOf("verify.html") === -1) {
+        if (!window.location.pathname.includes("/verify")) {
             $("#doc-file").attr("disabled", true);
+            console.log("Input 'doc-file' dinonaktifkan di halaman non-verifikasi (karena belum login)."); // Debugging
         }
-        // Pastikan input file di halaman verifikasi TIDAK dinonaktifkan jika tidak login
-        // Logika di atas sudah menangani ini (tidak masuk blok if)
     }
 };
 
 async function verify_Hash() {
-    //Show the loading
     $("#loader").show();
+    hide_txInfo();
 
     if (window.hashedfile) {
-        await contract.methods
-            .findDocHash(window.hashedfile)
-            .call({
-                // from: window.userAddress // Ini sudah dikomentari, bagus.
-            })
-            .then((result) => {
-                $(".transaction-status").removeClass("d-none");
-                window.newHash = result;
-                if ((result[0] != 0) & (result[1] != 0)) {
-                    print_verification_info(result, true);
-                } else {
-                    print_verification_info(result, false);
-                }
-            })
-            .catch(error => { // Tangani error jika panggilan kontrak gagal
-                console.error("Error verifying hash:", error);
-                $("#loader").hide();
-                $("#doc-status").html(`<h3 class="text-danger">
-                    Error saat verifikasi: ${error.message}
-                </h3>`);
-                show_txInfo();
-            });
+        try {
+            const readonlyWeb3 = new Web3(window.CONTRACT.networkpublic);
+            const readonlyContract = new readonlyWeb3.eth.Contract(
+                window.CONTRACT.abi,
+                window.CONTRACT.address
+            );
+
+            console.log(`Memverifikasi hash menggunakan node publik: ${window.CONTRACT.networkpublic}`);
+            const result = await readonlyContract.methods
+                .findDocHash(window.hashedfile)
+                .call();
+
+            $(".transaction-status").removeClass("d-none");
+            window.newHash = result;
+            if (result[0] != 0 && result[1] != 0) {
+                print_verification_info(result, true);
+            } else {
+                print_verification_info(result, false);
+            }
+        } catch (error) {
+            console.error("Error verifying hash:", error);
+            $("#loader").hide();
+            $("#doc-status").html(`<h3 class="text-danger">
+                Error saat verifikasi: ${error.message || 'Terjadi kesalahan tidak dikenal.'}
+            </h3>`);
+            show_txInfo();
+        }
     } else {
         $("#loader").hide();
         $("#doc-status").html(`<h3 class="text-warning">
@@ -339,42 +360,58 @@ function checkURL() {
     let url_string = window.location.href;
     let url = new URL(url_string);
     window.hashedfile = url.searchParams.get("hash");
-    if (!window.hashedfile) return;
-
+    if (!window.hashedfile) {
+        // Jika tidak ada hash di URL, pastikan tombol tetap aktif
+        $("#upload_file_button").attr("disabled", false);
+        return;
+    }
     verify_Hash();
 }
-// get Sha3 Hash from the file
+
 async function get_Sha3() {
-    $("#note").html(`<h5 class="text-warning">Proses Hash Dokumen</h5>`);
-    $("#upload_file_button").attr("disabled", false);
-    console.log("file changed");
-    var file = await document.getElementById("doc-file").files[0];
+    $("#note").html(`<h5 class="text-warning">Proses Hash Dokumen...</h5>`);
+    $("#upload_file_button").attr("disabled", true);
+    console.log("File berubah, mulai hashing...");
+
+    var fileInput = document.getElementById("doc-file");
+    var file = fileInput.files[0];
+
     if (file) {
         var reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = async function (evt) {
-            window.hashedfile = await web3.utils.soliditySha3(evt.target.result);
-            console.log(`Document Hash : ${window.hashedfile}`);
-            $("#note").html(
-                `<h5 class="text-center text-info">Dokumen Berhasil di Hash</h5>`
-            );
+            try {
+                window.hashedfile = await web3.utils.soliditySha3(evt.target.result);
+                console.log(`Document Hash : ${window.hashedfile}`);
+                $("#note").html(
+                    `<h5 class="text-center text-info">Dokumen Berhasil di Hash</h5>`
+                );
+                $("#upload_file_button").attr("disabled", false);
+            } catch (hashError) {
+                console.error("Error hashing file:", hashError);
+                $("#note").html(
+                    `<h5 class="text-center text-danger">Error hashing file: ${hashError.message}</h5>`
+                );
+                $("#upload_file_button").attr("disabled", true);
+                window.hashedfile = null;
+            }
         };
         reader.onerror = function (evt) {
-            console.log("error reading file");
-            return false;
+            console.error("Error reading file:", evt);
+            $("#note").html(`<h5 class="text-center text-danger">Error membaca file.</h5>`);
+            $("#upload_file_button").attr("disabled", true);
+            window.hashedfile = null;
         };
     } else {
         window.hashedfile = null;
-        // Opsional: Nonaktifkan tombol verifikasi jika tidak ada file yang dipilih
-        // $("#upload_file_button").attr("disabled", true);
+        $("#upload_file_button").attr("disabled", true);
         $("#note").html(`<span class="text-red-500 text-sm mt-1">Belum ada file dipilih</span>`);
-        return false;
     }
 }
 
 function print_verification_info(result, is_verified) {
     const studentDocumentObject = document.getElementById("student-document");
-    const notFoundImage = document.getElementById("not-found-image"); // <<< Referensi baru
+    const notFoundImage = document.getElementById("not-found-image");
     const fallbackLink = document.getElementById("fallback-download-link");
 
     $("#loader").hide();
@@ -415,7 +452,7 @@ function print_verification_info(result, is_verified) {
 
         var t = new Date(1970, 0, 1);
         t.setSeconds(result[1]);
-        t.setHours(t.getHours() + 7);
+        t.setHours(t.getHours() + 7); // Adjust for WIB (GMT+7)
 
         $("#doc-status").html(`<h3 class="text-info">
         Dokumen Tervalidasi dengan Sukses 
@@ -460,7 +497,13 @@ function hide_txInfo() {
 function show_txInfo() {
     $(".transaction-status").removeClass("d-none");
 }
+
 async function get_ethBalance() {
+    if (!window.userAddress) { // Add check for userAddress
+        console.warn("Cannot get ETH balance: User address not set.");
+        $("#userBalance").html("n/a");
+        return;
+    }
     await web3.eth.getBalance(window.userAddress, function (err, balance) {
         if (err === null) {
             $("#userBalance").html(
@@ -468,7 +511,10 @@ async function get_ethBalance() {
                 web3.utils.fromWei(balance).substr(0, 6) +
                 ""
             );
-        } else $("#userBalance").html("n/a");
+        } else {
+            console.error("Error getting ETH balance:", err);
+            $("#userBalance").html("n/a");
+        }
     });
 }
 
@@ -516,7 +562,7 @@ function printUploadInfo(result) {
     get_ethBalance();
 
     $("#note").html(`<h5 class="text-info">
-    Transaksi Dikonfirmasi ke BlockChain<i class="mx-2 text-info fa fa-check-circle" aria-hidden="true"></i>
+    Transaksi Dikonfirmasi ke BlockChain<i class="mx-2 text-info fa-solid fa-check-circle" aria-hidden="true"></i>
     </h5>`);
     listen();
 }
@@ -571,10 +617,6 @@ async function uploadFileToIpfs() {
             method: "POST",
             body: formData,
             headers: {
-                // Hapus 'Content-Type' agar browser bisa set boundary dengan benar
-                // 'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
-                // 'Authorization': `Bearer ${PINATA_JWT}` // Jika menggunakan JWT
-                // Atau gunakan API Key & Secret langsung (kurang direkomendasikan di client-side)
                 'pinata_api_key': PINATA_API_KEY,
                 'pinata_secret_api_key': PINATA_SECRET_API_KEY
             },
@@ -588,7 +630,6 @@ async function uploadFileToIpfs() {
         const data = await response.json();
         console.log("Berkas diunggah ke Pinata:", data);
 
-        // Piñata mengembalikan CID dalam properti 'IpfsHash'
         return data.IpfsHash;
 
     } catch (error) {
@@ -645,8 +686,6 @@ async function sendHash() {
     }
 }
 
-//delete document hash from the contract
-//only the exporter who add it can delete it
 async function deleteHash() {
     $("#loader").removeClass("d-none");
     $("#upload_file_button").slideUp();
@@ -689,7 +728,6 @@ async function deleteHash() {
     }
 }
 
-//get current time
 function getTime() {
     let d = new Date();
     a =
@@ -707,10 +745,25 @@ function getTime() {
     return a;
 }
 
-//get network name based on ID
 async function get_ChainID() {
-    let a = await web3.eth.getChainId();
-    console.log(a);
+    let a;
+    try {
+        if (window.ethereum && window.ethereum.selectedAddress) {
+            a = await window.ethereum.request({ method: 'eth_chainId' });
+            a = parseInt(a, 16); // Convert hex to decimal
+        } else {
+            a = await window.web3.eth.getChainId(); // Use public web3 if no user wallet
+        }
+    } catch (error) {
+        console.error("Error getting ChainID:", error);
+        window.chainID = "Gagal mengambil ChainID";
+        let network = document.getElementById("network");
+        if (network) {
+            network.innerHTML = `<i class="text-danger fa-solid fa-circle-nodes mx-2"></i>${window.chainID}`;
+        }
+        return;
+    }
+
     switch (a) {
         case 1:
             window.chainID = "Ethereum Main Network (Mainnet)";
@@ -740,7 +793,7 @@ async function get_ChainID() {
             window.chainID = "Kovan Test Network";
             break;
         default:
-            window.chainID = "Uknnown ChainID";
+            window.chainID = `Jaringan Tidak Dikenal (ID: ${a})`;
             break;
     }
     let network = document.getElementById("network");
@@ -755,43 +808,61 @@ function get_Sha3() {
     hide_txInfo();
     $("#note").html(`<h5 class="text-warning">Proses Hash Dokumen...</h5>`);
 
-    $("#upload_file_button").attr("disabled", false);
+    $("#upload_file_button").attr("disabled", true); // Nonaktifkan sementara saat menghitung hash
+    console.log("File berubah, mulai hashing...");
 
-    console.log("file changed");
+    var fileInput = document.getElementById("doc-file");
+    var file = fileInput.files[0];
 
-    var file = document.getElementById("doc-file").files[0];
     if (file) {
         var reader = new FileReader();
         reader.readAsText(file, "UTF-8");
-        reader.onload = function (evt) {
-            window.hashedfile = web3.utils.soliditySha3(evt.target.result);
-            console.log(`Document Hash : ${window.hashedfile}`);
-            $("#note").html(
-                `<h5 class="text-center text-info">Dokumen Berhasil di Hash</h5>`
-            );
+        reader.onload = async function (evt) {
+            try {
+                window.hashedfile = await web3.utils.soliditySha3(evt.target.result);
+                console.log(`Document Hash : ${window.hashedfile}`);
+                $("#note").html(
+                    `<h5 class="text-center text-info">Dokumen Berhasil di Hash</h5>`
+                );
+                $("#upload_file_button").attr("disabled", false); // Aktifkan tombol setelah hash berhasil
+            } catch (hashError) {
+                console.error("Error hashing file:", hashError);
+                $("#note").html(
+                    `<h5 class="text-center text-danger">Error hashing file: ${hashError.message}</h5>`
+                );
+                $("#upload_file_button").attr("disabled", true); // Tetap nonaktif jika ada error hash
+                window.hashedfile = null;
+            }
         };
         reader.onerror = function (evt) {
-            console.log("error reading file");
+            console.error("Error reading file:", evt);
+            $("#note").html(`<h5 class="text-center text-danger">Error membaca file.</h5>`);
+            $("#upload_file_button").attr("disabled", true); // Nonaktifkan tombol
+            window.hashedfile = null;
         };
     } else {
         window.hashedfile = null;
+        $("#upload_file_button").attr("disabled", true); // Nonaktifkan tombol jika tidak ada file
+        $("#note").html(`<span class="text-red-500 text-sm mt-1">Belum ada file dipilih</span>`);
     }
 }
 
-//logout
 function disconnect() {
     $("#logoutButton").hide();
     $("#loginButton").show();
     window.userAddress = null;
     $(".wallet-status").addClass("d-none");
     window.localStorage.setItem("userAddress", null);
-    $("#upload_file_button").addClass("disabled");
+    // Di halaman verifikasi, jangan menonaktifkan tombol verifikasi jika disconnect
+    if (window.location.href.indexOf("verify.html") === -1) {
+        $("#upload_file_button").addClass("disabled");
+    }
+    window.location.reload(); // Refresh halaman untuk membersihkan state
 }
 
-//shortcut wallet address
 function truncateAddress(address) {
     if (!address) {
-        return;
+        return ""; // Mengembalikan string kosong jika address null/undefined
     }
     return `${address.substr(0, 7)}...${address.substr(
         address.length - 8,
@@ -862,18 +933,29 @@ async function addExporter() {
 }
 
 async function getExporterInfo() {
+    if (!window.userAddress) { // Tambahkan pengecekan
+        console.warn("getExporterInfo: window.userAddress tidak terdefinisi.");
+        window.info = "Informasi Eksportir Tidak Tersedia (Belum Login)";
+        return;
+    }
     await window.contract.methods
         .getExporterInfo(window.userAddress)
         .call({
             from: window.userAddress
         })
-
         .then((result) => {
             window.info = result;
+        }).catch(error => {
+            console.error("Error getting exporter info:", error);
+            window.info = "Gagal mengambil info eksportir.";
         });
 }
 
 async function getCounters() {
+    if (!window.userAddress) { // Tambahkan pengecekan
+        console.warn("getCounters: window.userAddress tidak terdefinisi.");
+        return;
+    }
     await window.contract.methods
         .count_Exporters()
         .call({
@@ -884,7 +966,7 @@ async function getCounters() {
             $("#num-exporters").html(
                 `<i class="fa-solid fa-building-columns mx-2 text-info"></i>${result}`
             );
-        });
+        }).catch(error => { console.error("Error counting exporters:", error); });
     await window.contract.methods
         .count_hashes()
         .call({
@@ -895,7 +977,7 @@ async function getCounters() {
             $("#num-hashes").html(
                 `<i class="fa-solid fa-file mx-2 text-warning"></i>${result}`
             );
-        });
+        }).catch(error => { console.error("Error counting hashes:", error); });
 }
 
 async function editExporter() {
@@ -1016,57 +1098,92 @@ async function deleteExporter() {
     }
 }
 
-// Generate QR code so any one an Verify the documents
 function generateQRCode() {
     document.getElementById("qrcode").innerHTML = "";
     console.log("making qr-code...");
     var qrcode = new QRCode(document.getElementById("qrcode"), {
         colorDark: "#000",
         colorLight: "#fff",
-        // colorBorder: "#fff",
         correctLevel: QRCode.CorrectLevel.H,
     });
-    if (!window.hashedfile) return;
-    let url = `${window.location.host}/verify.html?hash=${window.hashedfile}`; //bisa ganti dengan IP
+    if (!window.hashedfile) {
+        console.warn("No hashed file available for QR code generation.");
+        return;
+    }
+    let url = `${window.location.protocol}//${window.location.host}/verify.html?hash=${window.hashedfile}`;
     qrcode.makeCode(url);
-    document.getElementById("download-link").download =
-        document.getElementById("doc-file").files[0].name;
-    document.getElementById("verfiy").href =
-        window.location.protocol + "//" + url;
+
+    // Pastikan doc-file input ada sebelum mencoba mengakses files[0].name
+    const docFileElement = document.getElementById("doc-file");
+    if (docFileElement && docFileElement.files && docFileElement.files[0]) {
+        document.getElementById("download-link").download = docFileElement.files[0].name;
+    } else {
+        console.warn("Document file input not found or no file selected for download name.");
+        document.getElementById("download-link").download = "document_hash.png"; // Fallback name
+    }
+
+    document.getElementById("verfiy").href = url;
 
     function makeDownload() {
-        document.getElementById("download-link").href =
-            document.querySelector("#qrcode img").src;
+        const qrCodeImg = document.querySelector("#qrcode img");
+        if (qrCodeImg) {
+            document.getElementById("download-link").href = qrCodeImg.src;
+        } else {
+            console.warn("QR code image not found for download link.");
+        }
     }
     setTimeout(makeDownload, 500);
-    //  makeDownload();
 }
 
-//check old transaction and show them if exist
-//transactions in last afew hours will show but very old transactions wont show
 async function listen() {
     console.log("started...");
     if (window.location.pathname != "/upload.html") return;
     document.querySelector(".loading-tx").classList.remove("d-none");
-    window.web3 = new Web3(window.ethereum);
-    window.contract = new window.web3.eth.Contract(
-        window.CONTRACT.abi,
-        window.CONTRACT.address
-    );
 
-    await window.contract.getPastEvents(
-        "addHash", {
-        filter: {
-            _exporter: window.userAddress, //Only get the documents uploaded by current Exporter
+    // Pastikan window.ethereum tersedia sebelum menggunakan web3 dari window.ethereum
+    if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        window.contract = new window.web3.eth.Contract(
+            window.CONTRACT.abi,
+            window.CONTRACT.address
+        );
+    } else {
+        console.warn("MetaMask (window.ethereum) not detected. Cannot listen for user-specific events.");
+        document.querySelector(".loading-tx").classList.add("d-none");
+        // Mungkin tampilkan pesan kepada pengguna
+        return;
+    }
+
+    if (!window.userAddress) {
+        console.warn("No user address. Cannot listen for user-specific events.");
+        document.querySelector(".loading-tx").classList.add("d-none");
+        return;
+    }
+
+    try {
+        const blockNumber = await window.web3.eth.getBlockNumber();
+        await window.contract.getPastEvents(
+            "addHash", {
+            filter: {
+                _exporter: window.userAddress,
+            },
+            fromBlock: Math.max(0, blockNumber - 999), // Mencegah fromBlock negatif
+            toBlock: "latest",
         },
-        fromBlock: (await window.web3.eth.getBlockNumber()) - 999,
-        toBlock: "latest",
-    },
-        function (error, events) {
-            printTransactions(events);
-            console.log(events);
-        }
-    );
+            function (error, events) {
+                if (error) {
+                    console.error("Error getting past events:", error);
+                    document.querySelector(".loading-tx").classList.add("d-none");
+                    return;
+                }
+                printTransactions(events);
+                console.log("Past events:", events);
+            }
+        );
+    } catch (error) {
+        console.error("Error in listen function:", error);
+        document.querySelector(".loading-tx").classList.add("d-none");
+    }
 }
 
 function printTransactions(data) {
@@ -1082,7 +1199,7 @@ function printTransactions(data) {
         a.href = `${window.CONTRACT.explore}` + "/tx/" + data[i].transactionHash;
         a.setAttribute("target", "_blank");
         a.className = "transaction-card col-lg-3 col-md-4 col-sm-5 m-2 bg-dark text-light rounded position-relative";
-        a.style = "overflow:hidden; display:block; height:200px;"; // Tambahkan tinggi tetap
+        a.style = "overflow:hidden; display:block; height:200px;";
 
         const image = document.createElement("object");
         image.style = "width:100%; height:100%; transition: all 0.3s ease;";

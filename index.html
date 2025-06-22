@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Devira Chain - Verifikasi Dokumen</title>
+  <link rel="icon" href="/files/Devira Chain Logo.png" type="image/png">
   <link rel="stylesheet" href="./css/loader.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -82,7 +83,7 @@
           </button>
         </div>
         <div class="md:hidden flex items-center">
-          <button type="button"
+          <button type="button" id="mobileMenuButton"
             class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-primary-700 focus:outline-none">
             <span class="sr-only">Buka menu</span>
             <i class="fas fa-bars"></i>
@@ -92,7 +93,7 @@
     </div>
 
     <!-- Menu mobile -->
-    <div class="md:hidden hidden" id="mobile-menu">
+    <div class="md:hidden hidden bg-white shadow-lg" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
         <a href="index.html"
           class="bg-primary-100 text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Beranda</a>
@@ -281,15 +282,15 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <span class="text-primary-600 font-medium">SAMPLE</span>
-        <h2 class="text-3xl font-bold mb-4">Pindai Kartu Contoh untuk Menguji Sistem Kami</h2>
+        <h2 class="text-3xl font-bold mb-4">Pindai untuk Menguji Sistem Kami</h2>
       </div>
 
       <div class="grid md:grid-cols-2 gap-8">
         <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-          <img src="files/Ali Falah Orio.svg" alt="Contoh Dokumen 1" class="w-full h-auto rounded">
+          <img src="files/coming soon.svg" alt="Contoh Dokumen 1" class="w-full h-auto rounded">
         </div>
         <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-          <img src="files/Ali Hussein Orio.svg" alt="Contoh Dokumen 2" class="w-full h-auto rounded">
+          <img src="files/coming soon.svg" alt="Contoh Dokumen 2" class="w-full h-auto rounded">
         </div>
       </div>
     </div>
@@ -364,10 +365,12 @@
   </script>
 
   <script>
-    $('[aria-controls="mobile-menu"]').click(function () {
+    // Toggle menu mobile
+    $('#mobileMenuButton').click(function () {
       $('#mobile-menu').toggleClass('hidden');
     });
 
+    // Tombol scroll ke atas
     window.onscroll = function () {
       if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
         $('#scroll-btn').removeClass('hidden');
@@ -376,6 +379,13 @@
       }
     };
 
+    // Fungsi scroll ke atas
+    function topFunction() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+
+    // Sembunyikan loader ketika halaman selesai dimuat
     $(window).on('load', function () {
       $(".loader-wraper").fadeOut("slow");
     });
