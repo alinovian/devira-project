@@ -70,7 +70,7 @@
             class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Verifikasi</a>
           <a href="delete.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Hapus</a>
           <a href="admin.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Admin</a>
-          <a href="about.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Tim Kami</a>
+          <a href="about.html" class="text-gray-600 hover:text-primary-700 px-1 py-2 text-sm font-medium">Tentang Saya</a>
         </div>
         <div class="hidden md:flex items-center space-x-4">
           <button id="loginButton" onclick="connect()"
@@ -106,8 +106,7 @@
         <a href="admin.html"
           class="text-gray-600 hover:bg-primary-50 hover:text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Admin</a>
         <a href="about.html"
-          class="text-gray-600 hover:bg-primary-50 hover:text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Tim
-          Kami</a>
+          class="text-gray-600 hover:bg-primary-50 hover:text-primary-700 block px-3 py-2 rounded-md text-base font-medium">Tentang Saya</a>
         <div class="pt-4 pb-3 border-t border-gray-200">
           <div class="flex items-center px-5 space-x-3">
             <button id="loginButtonMobile" onclick="connect()"
@@ -285,16 +284,18 @@
         <h2 class="text-3xl font-bold mb-4">Pindai untuk Menguji Sistem Kami</h2>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-8">
-        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-          <img src="files/Sample Card Devira Chain - Ali Novian.jpg" alt="Contoh Dokumen 1" class="w-full h-auto rounded">
-        </div>
-        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-          <img src="files/Sample Card Devira Chain - Angga Kurniawan.jpg" alt="Contoh Dokumen 2" class="w-full h-auto rounded">
+      <div class="flex justify-center gap-8">
+      <!-- <div class="grid md:grid-cols-2 justify-center gap-8"> -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm max-w-2xl mx-auto">
+          <img src="files/Sample Card Devira Chain - Ali Novian.jpg" alt="Contoh Dokumen 1"
+            class="w-full h-auto rounded">
         </div>
       </div>
     </div>
   </section>
+  <!-- <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+          <img src="files/Sample Card Devira Chain - Angga Kurniawan.jpg" alt="Contoh Dokumen 2" class="w-full h-auto rounded">
+        </div> -->
 
   <!-- Footer -->
   <footer class="bg-gray-900 text-white pt-16 pb-8">
@@ -309,10 +310,10 @@
           </ul>
         </div>
         <div>
-          <h3 class="text-lg font-semibold mb-4">Tentang Kami</h3>
+          <h3 class="text-lg font-semibold mb-4">Tentang</h3>
           <ul class="space-y-2">
-            <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Perusahaan</a></li>
-            <li><a href="about.html" class="text-gray-400 hover:text-white transition duration-300">Tim Kami</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Proyek</a></li>
+            <li><a href="about.html" class="text-gray-400 hover:text-white transition duration-300">Pengembang</a></li>
           </ul>
         </div>
         <div class="md:col-span-2">
@@ -345,7 +346,7 @@
   </button>
 
   <!-- Tombol kontak -->
-  <a href="mailto:devirachain@gmail.com?subject=Dari Situs Devira Chain"
+  <a href="mailto:alinovian.edu@gmail.com?subject=Dari Situs Devira Chain"
     class="fixed bottom-6 left-6 bg-gray-800 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-700 transition duration-300">
     <i class="fas fa-headset"></i>
   </a>
